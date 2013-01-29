@@ -14,6 +14,7 @@ package scopart.raven
 	import flash.net.URLRequest;
 	import flash.net.URLRequestHeader;
 	import flash.net.URLRequestMethod;
+	import flash.system.Security;
 
 	/**
 	 * @author Alexis Couronne
@@ -25,6 +26,8 @@ package scopart.raven
 		public function RavenMessageSender(config : RavenConfig)
 		{
 			_config = config;
+			Security.loadPolicyFile(_config.uri + 'crossdomain.xml');
+			Security.loadPolicyFile(_config.uri + 'api/' + _config.projectID + '/crossdomain.xml');
 		}
 
 		public function send(message : String, timestamp : Number) : void
