@@ -60,6 +60,33 @@ package scopart.raven
 		{
 			return Math.round(min + Math.random() * (max - min));
 		}
+		
+		/**
+		 * Parses a single line of a stace trace and returns a stack frame object
+		 * containing in any case a 'function' property and optional
+		 * 'filename' and 'lineno' properties if they were available in the 
+		 * strack trace line. 
+		 */
+		public static function parseStackFrame(frame:String):Object {
+			var stackFrame:Object = new Object;
+			var matches:Array = frame.match(/(at )?([^\(]*[^\)]*\))[^\[]*(\[([^\]]*)])?/);
+			if(matches && matches.length >= 3 && matches[2] is String) {
+				stackFrame['function'] = matches[2];
+			} else {
+				stackFrame['function'] = frame;
+			}
+			if(matches && matches.length >= 5 && matches[4] is String) {
+				stackFrame['filename'] = matches[4]; 
+				matches = String(matches[4]).match(/(.*):(\d+)$/);
+				if(matches && matches.length >= 2 && matches[1] is String) {
+					stackFrame['filename'] = matches[1]; 
+					if(matches && matches.length >= 3 && matches[2] is String && !isNaN(parseInt(matches[2]))) {
+						stackFrame['lineno'] = matches[2]; 
+					}
+				}
+			}
+			return stackFrame;
+		}
 
 		public static function parseStackTrace(error : Error) : Array
 		{
@@ -75,14 +102,7 @@ package scopart.raven
 					causedFrame['lineno'] = -1;
 					result.push(causedFrame);
 				}
-				var element : String = elements[i];
-				var subelements : Array = element.substr(3, element.length - 4).split('[');
-				var fileAndLine : Array = String(subelements[1]).split(':');
-				var frame : Object = new Object();
-				frame['filename'] = fileAndLine[0];
-				frame['lineno'] = fileAndLine[1];
-				frame['function'] = subelements[0];
-				result.push(frame);
+				result.push(parseStackFrame(elements[i]));
 			}
 			return result;
 		}
