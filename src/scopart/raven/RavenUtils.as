@@ -96,19 +96,10 @@ package scopart.raven
 		{
 			var result : Array = new Array();
 			var elements : Array = error.getStackTrace().split('\n');
-			elements.shift();
-			for (var i : int = 0 ; i < elements.length ; i++)
-			{
-				if (i == 0)
-				{
-					var causedFrame : Object = new Object();
-					causedFrame['filename'] = 'Caused by ' + RavenUtils.getClassName(error) + '(' + error.message + ')';
-					causedFrame['lineno'] = -1;
-					result.push(causedFrame);
-				}
+			for (var i : int = 1 ; i < elements.length ; i++) {
 				result.push(parseStackFrame(elements[i]));
 			}
-			return result;
+			return result.reverse();
 		}
 
 		public static function getClassName(object : Object) : String
