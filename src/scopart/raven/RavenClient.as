@@ -32,6 +32,23 @@ package scopart.raven
 		public static const NAME : String = 'raven-as3/' + VERSION;
 		
 		/**
+		 * User ID that can be sent to sentry, if availabe 
+		 **/
+		public var userID:int = -1;
+
+		/**
+		 * User name that can be sent to sentry, if available and
+		 * if userID != -1 
+		 **/
+		public var userName:String = null;
+
+		/**
+		 * E-Mail address of the user, that can be sent to sentry, 
+		 * if available and if userID != -1 
+		 **/
+		public var userEMail:String = null;
+		
+		/**
 		 * Additional information that will be sent in the 'Environment' section
 		 * of the HTTP Request information that is sent in addition to errors.
 		 **/
@@ -100,6 +117,11 @@ package scopart.raven
 				object['sentry.interfaces.Stacktrace'] = buildStacktrace(error);
 				object['sentry.interfaces.Http'] = buildHttpInfo();
 			}
+			
+			if(this.userID != -1) {
+				object['sentry.interfaces.User'] = buildUserInfo();
+			}
+			
 			object['timestamp'] = timeStamp;
 			object['project'] = _config.projectID;
 			object['level'] = level;
@@ -108,6 +130,18 @@ package scopart.raven
 			return JSON.encode(object);
 		}
 		
+		private function buildUserInfo():Object {
+			var userInfo:Object = {
+				id: this.userID
+			};
+			if(this.userName) {
+				userInfo['username'] = this.userName;
+			}
+			if(this.userEMail) {
+				userInfo['email'] = this.userEMail;
+			}
+			return userInfo;
+		}
 		
 		private function buildHttpInfo():Object {
 			return {
