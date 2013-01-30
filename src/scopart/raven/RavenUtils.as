@@ -10,7 +10,9 @@ package scopart.raven
 {
 	import com.adobe.crypto.HMAC;
 	import com.adobe.crypto.SHA1;
-
+	
+	import flash.external.ExternalInterface;
+	import flash.system.Capabilities;
 	import flash.utils.getQualifiedClassName;
 
 	/**
@@ -129,5 +131,56 @@ package scopart.raven
 			result += date.secondsUTC;
 			return result;
 		}
+		
+		/**
+		 * Adds flash client information to the object. This information
+		 * will be sent to the sentry server as additional information
+		 * when errors are sent. 
+		 **/
+		public static function addClientInformation(info:Object):Object {
+			try {
+				info['flashVersion'] = Capabilities.version;
+				info['screenResolutionX'] = Capabilities.screenResolutionX;
+				info['screenResolutionY'] = Capabilities.screenResolutionY;
+				info['hasAccessibility'] = Capabilities.hasAccessibility;
+				info['hasAudio'] = Capabilities.hasAudio;
+				info['hasAudioEncoder'] = Capabilities.hasAudioEncoder;
+				info['hasEmbeddedVideo'] = Capabilities.hasEmbeddedVideo;
+				info['hasIME'] = Capabilities.hasIME;
+				info['hasMP3'] = Capabilities.hasMP3;
+				info['hasPrinting'] = Capabilities.hasPrinting;
+				info['hasScreenBroadcast'] = Capabilities.hasScreenBroadcast;
+				info['hasScreenPlayback'] = Capabilities.hasScreenPlayback;
+				info['hasStreamingAudio'] = Capabilities.hasStreamingAudio;
+				info['hasStreamingVideo'] = Capabilities.hasStreamingVideo;
+				info['hasTLS'] = Capabilities.hasTLS;
+				info['hasVideoEncoder'] = Capabilities.hasVideoEncoder;
+				info['touchscreenType'] = Capabilities.touchscreenType;
+			}catch(error:*) {}
+			
+			return info;
+		}
+		
+		/**
+		 * Gets the url from the clients browser
+		 **/
+		public static function getClientURL():String {
+			try {
+				return ExternalInterface.call("window.location.href.toString") || "";
+			}catch(error:*) {}
+			return "";
+		}
+		
+		/**
+		 * Gets a http header object containing the 'User-Agent' key with the current value.
+		 * This is used as additional information when errors are sent to the sentry server
+		 **/
+		public static function getUserAgentHeaders():Object {
+			try {
+				return {'User-Agent': ExternalInterface.call("window.navigator.userAgent.toString") || ""};
+			}catch(error:*) {}
+			return {};
+		}
+		
 	}
 }

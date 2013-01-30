@@ -30,6 +30,12 @@ package scopart.raven
 		
 		public static const VERSION : String = '0.1';
 		public static const NAME : String = 'raven-as3/' + VERSION;
+		
+		/**
+		 * Additional information that will be sent in the 'Environment' section
+		 * of the HTTP Request information that is sent in addition to errors.
+		 **/
+		public var additionalInfo:Object = null;
 
 		public function RavenClient(sentryDSN : String)
 		{
@@ -92,6 +98,7 @@ package scopart.raven
 				object['culprit'] = determineCulprit(error);
 				object['sentry.interfaces.Exception'] = buildException(error);
 				object['sentry.interfaces.Stacktrace'] = buildStacktrace(error);
+				object['sentry.interfaces.Http'] = buildHttpInfo();
 			}
 			object['timestamp'] = timeStamp;
 			object['project'] = _config.projectID;
@@ -99,6 +106,16 @@ package scopart.raven
 			object['logger'] = logger;
 			object['server_name'] = RavenUtils.getHostname();
 			return JSON.encode(object);
+		}
+		
+		
+		private function buildHttpInfo():Object {
+			return {
+				url: RavenUtils.getClientURL(),
+				query_string: "Client Information",
+				env: RavenUtils.addClientInformation(this.additionalInfo || new Object()),
+				headers: RavenUtils.getUserAgentHeaders()
+			}
 		}
 
 		/**
