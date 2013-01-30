@@ -69,7 +69,8 @@ package scopart.raven
 		 */
 		public static function parseStackFrame(frame:String):Object {
 			var stackFrame:Object = new Object;
-			var matches:Array = frame.match(/(at )?([^\(]*[^\)]*\))[^\[]*(\[([^\]]*)])?/);
+			var matches:Array = frame.match(/(\s*at\s*)?([^\(]*[^\)]*\))[^\[]*(\[([^\]]*)])?/);
+			var lineNumber:int = NaN;
 			if(matches && matches.length >= 3 && matches[2] is String) {
 				stackFrame['function'] = matches[2];
 			} else {
@@ -80,8 +81,8 @@ package scopart.raven
 				matches = String(matches[4]).match(/(.*):(\d+)$/);
 				if(matches && matches.length >= 2 && matches[1] is String) {
 					stackFrame['filename'] = matches[1]; 
-					if(matches && matches.length >= 3 && matches[2] is String && !isNaN(parseInt(matches[2]))) {
-						stackFrame['lineno'] = matches[2]; 
+					if(matches && matches.length >= 3 && matches[2] is String && !isNaN(lineNumber = parseInt(matches[2]))) {
+						stackFrame['lineno'] = lineNumber; 
 					}
 				}
 			}
