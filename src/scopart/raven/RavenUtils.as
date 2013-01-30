@@ -68,7 +68,10 @@ package scopart.raven
 		 * strack trace line. 
 		 */
 		public static function parseStackFrame(frame:String):Object {
-			var stackFrame:Object = new Object;
+			var stackFrame:Object = {
+				in_app: true,
+				abs_path: ""
+			};
 			var matches:Array = frame.match(/(\s*at\s*)?([^\(]*[^\)]*\))[^\[]*(\[([^\]]*)])?/);
 			var lineNumber:int = NaN;
 			if(matches && matches.length >= 3 && matches[2] is String) {
