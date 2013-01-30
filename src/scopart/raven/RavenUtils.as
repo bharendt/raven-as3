@@ -106,7 +106,7 @@ package scopart.raven
 		{
 			var fullClassName : String = getQualifiedClassName(object);
 			var splittedClassName : Array = fullClassName.split('::');
-			return splittedClassName[1];
+			return splittedClassName.length > 1 ? splittedClassName[1] : fullClassName;
 		}
 
 		public static function getModuleName(object : Object) : String
