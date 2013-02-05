@@ -179,7 +179,7 @@ package scopart.raven
 		 */
 		private function determineCulprit(error : Error) : String
 		{
-			return error.getStackTrace().split('\n')[0];
+			return error.getStackTrace() != null ? error.getStackTrace().split('\n')[0] : error.message;
 		}
 	}
 }

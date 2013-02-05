@@ -96,6 +96,12 @@ package scopart.raven
 
 		public static function parseStackTrace(error : Error) : Array
 		{
+			if(error.getStackTrace() == null) {
+				return [{
+					in_app: true,
+					abs_path: "No Stacktrace available for Error: " + error.message + "."
+				}]
+			}
 			var result : Array = new Array();
 			var elements : Array = error.getStackTrace().split('\n');
 			for (var i : int = 1 ; i < elements.length ; i++) {
