@@ -139,23 +139,13 @@ package scopart.raven
 		 **/
 		public static function addClientInformation(info:Object):Object {
 			try {
-				info['flashVersion'] = Capabilities.version;
-				info['screenResolutionX'] = Capabilities.screenResolutionX;
-				info['screenResolutionY'] = Capabilities.screenResolutionY;
-				info['hasAccessibility'] = Capabilities.hasAccessibility;
-				info['hasAudio'] = Capabilities.hasAudio;
-				info['hasAudioEncoder'] = Capabilities.hasAudioEncoder;
-				info['hasEmbeddedVideo'] = Capabilities.hasEmbeddedVideo;
-				info['hasIME'] = Capabilities.hasIME;
-				info['hasMP3'] = Capabilities.hasMP3;
-				info['hasPrinting'] = Capabilities.hasPrinting;
-				info['hasScreenBroadcast'] = Capabilities.hasScreenBroadcast;
-				info['hasScreenPlayback'] = Capabilities.hasScreenPlayback;
-				info['hasStreamingAudio'] = Capabilities.hasStreamingAudio;
-				info['hasStreamingVideo'] = Capabilities.hasStreamingVideo;
-				info['hasTLS'] = Capabilities.hasTLS;
-				info['hasVideoEncoder'] = Capabilities.hasVideoEncoder;
-				info['touchscreenType'] = Capabilities.touchscreenType;
+				info['flashVersion'] = 'version' in Capabilities ? Capabilities['version'] : 'unknown';
+				var capabilities:Array = ['screenResolutionX', 'screenResolutionY', 'hasAccessibility', 'hasAudio', 'hasAudioEncoder', 'hasEmbeddedVideo', 'hasIME', 'hasMP3', 'hasPrinting', 'hasScreenBroadcast', 'hasScreenPlayback', 'hasStreamingAudio', 'hasStreamingVideo', 'hasTLS', 'hasVideoEncoder', 'touchscreenType']
+				for each(var capability:String in capabilities) {
+					if(capability in Capabilities) {
+						info[capability] = Capabilities[capability];
+					}
+				}
 			}catch(error:*) {}
 			
 			return info;
