@@ -42,11 +42,6 @@ package scopart.raven
 			return result;
 		}
 
-		public static function getHostname() : String
-		{
-			return "test";
-		}
-
 		/**
 		 * Generate message signature
 		 */

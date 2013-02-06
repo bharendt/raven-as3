@@ -53,13 +53,28 @@ package scopart.raven
 		 * of the HTTP Request information that is sent in addition to errors.
 		 **/
 		public var additionalInfo:Object = null;
+		
+		/**
+		 *  The name of the server / flash movie
+		 **/
+		public var serverName:String = null;
+		
+		/**
+		 * The name of the logger. By default the environment
+		 * ("production" or "development") will be used as
+		 * logger name.
+		 **/
+		public var logger:String = null;
 
-		public function RavenClient(sentryDSN : String)
+		public function RavenClient(sentryDSN : String, serverName:String = null)
 		{
 			if (sentryDSN == null || sentryDSN.length == 0)
 			{
 				throw new ArgumentError("You must provide a DSN to RavenClient");
 			}
+			this.serverName = serverName;
+			var error:Error = new Error();
+			this.logger = error.getStackTrace() == null || error.getStackTrace().search(/:[0-9]+]$/m) == -1 ? "production" : "development";
 			_config = new RavenConfig(sentryDSN);
 			_sender = new RavenMessageSender(_config);
 		}
@@ -125,8 +140,8 @@ package scopart.raven
 			object['timestamp'] = timeStamp;
 			object['project'] = _config.projectID;
 			object['level'] = level;
-			object['logger'] = logger;
-			object['server_name'] = RavenUtils.getHostname();
+			object['logger'] = this.logger || 'root';
+			object['server_name'] = this.serverName || 'server';
 			return JSON.encode(object);
 		}
 		
