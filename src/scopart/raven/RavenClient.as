@@ -28,7 +28,7 @@ package scopart.raven
 		public static const ERROR : uint = 40;
 		public static const FATAL : uint = 50;
 		
-		public static const VERSION : String = '0.1';
+		public static const VERSION : String = '1.0';
 		public static const NAME : String = 'raven-as3/' + VERSION;
 		
 		/**
