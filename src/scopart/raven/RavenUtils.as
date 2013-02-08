@@ -67,14 +67,16 @@ package scopart.raven
 		public static function parseStackFrame(frame:String):Object {
 			var stackFrame:Object = {
 				in_app: true,
-				abs_path: ""
+				abs_path: "",
+				module: ""
 			};
 			var matches:Array = frame.match(/(\s*at\s*)?([^\(]*[^\)]*\))[^\[]*(\[([^\]]*)])?/);
 			var lineNumber:int = NaN;
+			var functionName:String;
 			if(matches && matches.length >= 3 && matches[2] is String) {
-				stackFrame['function'] = matches[2];
+				stackFrame['function'] = functionName = matches[2];
 			} else {
-				stackFrame['function'] = frame;
+				stackFrame['function'] = functionName = frame;
 			}
 			if(matches && matches.length >= 5 && matches[4] is String) {
 				stackFrame['filename'] = matches[4]; 
@@ -84,6 +86,13 @@ package scopart.raven
 					if(matches && matches.length >= 3 && matches[2] is String && !isNaN(lineNumber = parseInt(matches[2]))) {
 						stackFrame['lineno'] = lineNumber; 
 					}
+				}
+			}
+			if(functionName) {
+				matches = functionName.match(/^(\w+[^\s]+::[^\/]+)\/(.*)$/);
+				if(matches && matches.length == 3) {
+					stackFrame['module'] = matches[1];
+					stackFrame['function'] = matches[2];
 				}
 			}
 			return stackFrame;
