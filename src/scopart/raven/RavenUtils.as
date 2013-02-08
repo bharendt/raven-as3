@@ -73,21 +73,37 @@ package scopart.raven
 			var matches:Array = frame.match(/(\s*at\s*)?([^\(]*[^\)]*\))[^\[]*(\[([^\]]*)])?/);
 			var lineNumber:int = NaN;
 			var functionName:String;
+			var fileName:String;
 			if(matches && matches.length >= 3 && matches[2] is String) {
 				stackFrame['function'] = functionName = matches[2];
 			} else {
 				stackFrame['function'] = functionName = frame;
 			}
 			if(matches && matches.length >= 5 && matches[4] is String) {
-				stackFrame['filename'] = matches[4]; 
+				stackFrame['filename'] = fileName = matches[4]; 
 				matches = String(matches[4]).match(/(.*):(\d+)$/);
 				if(matches && matches.length >= 2 && matches[1] is String) {
-					stackFrame['filename'] = matches[1]; 
+					stackFrame['filename'] = fileName = matches[1]; 
 					if(matches && matches.length >= 3 && matches[2] is String && !isNaN(lineNumber = parseInt(matches[2]))) {
 						stackFrame['lineno'] = lineNumber; 
 					}
 				}
+				// split path into file name and path name
+				if(fileName && fileName.length > 0) {
+					if(fileName.search(/[^\\]\//) != -1 && fileName.search(/[^\\]\\[^ &&^\\]/) == -1) {
+						matches = fileName.match(/^(.*[^\\])\/([^\/]+)$/); // linux path
+					} else if(fileName.search(/[^\\]\//) == -1 && fileName.search(/[^\\]\\[^ &&^\\]/) != -1) {
+						matches = fileName.match(/^(.*[^\\])\\([^ &&^\\][^\\]+)$/) // windows path
+					} else {
+						matches = null;
+					}
+					if(matches && matches.length == 3) {
+						stackFrame['abs_path'] = matches[1];
+						stackFrame['filename'] = matches[2];
+					}
+				}
 			}
+			// split function name into module and function name
 			if(functionName) {
 				matches = functionName.match(/^(\w+[^\s]+::[^\/]+)\/(.*)$/);
 				if(matches && matches.length == 3) {
