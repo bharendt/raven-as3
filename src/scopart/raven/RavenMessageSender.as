@@ -26,13 +26,14 @@ package scopart.raven
 		public function RavenMessageSender(config : RavenConfig)
 		{
 			_config = config;
-			Security.loadPolicyFile(_config.uri + 'crossdomain.xml');
-			Security.loadPolicyFile(_config.uri + 'api/' + _config.projectID + '/crossdomain.xml');
 		}
 
 		public function send(message : String, timestamp : Number) : void
 		{
 			var signature : String = RavenUtils.getSignature(message, timestamp, _config.privateKey);
+			
+			Security.loadPolicyFile(_config.uri + 'crossdomain.xml');
+			Security.loadPolicyFile(_config.uri + 'api/' + _config.projectID + '/crossdomain.xml');
 			
 			var loader : URLLoader = new URLLoader();
 			loader.addEventListener(Event.COMPLETE, onLoadComplete);
